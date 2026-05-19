@@ -49,8 +49,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $tag = "${{ steps.tag.outputs.tag }}"
+          Rename-Item -Path "fbox-self-contained\fbox-dist.zip" -NewName "fbox-$tag-self-contained.zip"
+          Rename-Item -Path "fbox-framework-dependent\fbox-dist.zip" -NewName "fbox-$tag-framework-dependent.zip"
           gh release create $tag `
             --title $tag `
             --notes "## 下载说明`n`n- **self-contained**: 不需要安装 .NET 运行时，解压即用`n- **framework-dependent**: 需要安装 .NET 9.0 运行时，体积更小" `
-            "fbox-self-contained\fbox-dist.zip#fbox-$tag-self-contained.zip" `
-            "fbox-framework-dependent\fbox-dist.zip#fbox-$tag-framework-dependent.zip"
+            "fbox-self-contained\fbox-$tag-self-contained.zip" `
+            "fbox-framework-dependent\fbox-$tag-framework-dependent.zip"
