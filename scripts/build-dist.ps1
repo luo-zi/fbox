@@ -10,7 +10,8 @@ $PublishArgs = @("-c", $Configuration)
 if ($SelfContained) {
     $PublishArgs += @("-r", $Runtime, "--self-contained", "true")
 } else {
-    $PublishArgs += "--self-contained", "false"
+    $PublishArgs += "--no-self-contained"
+    $PublishArgs += "/p:SelfContained=false"
 }
 
 Write-Host "=== Building fbox distribution package ===" -ForegroundColor Cyan
