@@ -28,6 +28,7 @@ Write-Host ">>> Publishing CLI (fbox.exe)..." -ForegroundColor Yellow
 $cliArgs = $PublishArgs + @(
     "-p:PublishSingleFile=true"
     "-p:IncludeNativeLibrariesForSelfExtract=true"
+    "/p:ForceRebuild=true"
 )
 dotnet publish (Join-Path $ProjectRoot "src\Fbox.Cli\Fbox.Cli.csproj") `
     -o (Join-Path $DistDir "cli") @cliArgs
@@ -46,6 +47,7 @@ Write-Host ">>> Publishing GUI (fbox-gui.exe)..." -ForegroundColor Yellow
 $guiArgs = $PublishArgs + @(
     "-p:PublishSingleFile=true"
     "-p:IncludeNativeLibrariesForSelfExtract=true"
+    "/p:ForceRebuild=true"
 )
 dotnet publish (Join-Path $ProjectRoot "src\Fbox.Gui\Fbox.Gui.csproj") `
     -o (Join-Path $DistDir "gui") @guiArgs

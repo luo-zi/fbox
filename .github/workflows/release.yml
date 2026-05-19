@@ -31,7 +31,7 @@ jobs:
 
       - name: Clean build cache
         shell: pwsh
-        run: Get-ChildItem src -Recurse -Directory -Include bin,obj | Remove-Item -Recurse -Force
+        run: Get-ChildItem -Path src -Directory -Recurse | Where-Object { $_.Name -in 'bin','obj' } | Remove-Item -Recurse -Force
 
       - name: Build (framework-dependent)
         shell: pwsh
