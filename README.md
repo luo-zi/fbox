@@ -23,7 +23,7 @@ dotnet run --project src\Fbox.Gui
 dotnet run --project src\Fbox.Cli -- list --new
 ```
 
-或直接下载 [releases](https://github.com/[user]/fbox/releases) 中的 dist 包，
+或直接下载 [releases](https://github.com/luo-zi/fbox/releases) 中的 dist 包，
 运行 `setup.ps1` 一键安装。
 
 ## 打包分发

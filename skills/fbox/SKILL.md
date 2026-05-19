@@ -105,7 +105,7 @@ AI 通过 CLI 命令查看收集箱中的文件引用，从而知道用户想让
 
 ```bash
 # 编译
-cd D:\Users\zjw\source\fbox && dotnet build
+cd path\to\fbox && dotnet build
 
 # 打包分发 (生成 dist/ 目录)
 .\scripts\build-dist.ps1
