@@ -12,32 +12,44 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  build-sc:
+    name: Build self-contained
     runs-on: windows-latest
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup .NET 9
-        uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
+      - shell: pwsh
+        run: .\scripts\build-dist.ps1 -SelfContained
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fbox-sc
+          path: dist\fbox-dist.zip
 
-      - name: Build (self-contained)
-        shell: pwsh
-        run: |
-          & .\scripts\build-dist.ps1 -SelfContained
-          Move-Item dist fbox-sc
+  build-fd:
+    name: Build framework-dependent
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+      - shell: pwsh
+        run: .\scripts\build-dist.ps1 -SelfContained:$false
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fbox-fd
+          path: dist\fbox-dist.zip
 
-      - name: Clean build cache
-        shell: pwsh
-        run: Get-ChildItem -Path src -Directory -Recurse | Where-Object { $_.Name -in 'bin','obj' } | Remove-Item -Recurse -Force
-
-      - name: Build (framework-dependent)
-        shell: pwsh
-        run: |
-          & .\scripts\build-dist.ps1 -SelfContained:$false
-          Move-Item dist fbox-fd
+  release:
+    name: Create Release
+    needs: [build-sc, build-fd]
+    runs-on: windows-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
 
       - name: Determine tag
         id: tag
@@ -53,6 +65,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $tag = "${{ steps.tag.outputs.tag }}"
-          Rename-Item fbox-sc\fbox-dist.zip fbox-$tag-sc.zip
-          Rename-Item fbox-fd\fbox-dist.zip fbox-$tag-fd.zip
-          gh release create $tag --title $tag --notes "**self-contained**: 不需 .NET 运行时`n**framework-dependent**: 需安装 .NET 9.0" -- fbox-sc\fbox-$tag-sc.zip fbox-fd\fbox-$tag-fd.zip
+          Move-Item artifacts\fbox-sc\fbox-dist.zip fbox-$tag-self-contained.zip
+          Move-Item artifacts\fbox-fd\fbox-dist.zip fbox-$tag-framework-dependent.zip
+          gh release create $tag --title $tag --notes "**self-contained**: 不需 .NET 运行时`n**framework-dependent**: 需安装 .NET 9.0" -- fbox-$tag-self-contained.zip fbox-$tag-framework-dependent.zip
