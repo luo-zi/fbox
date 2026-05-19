@@ -1,0 +1,56 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release tag (e.g. v1.0.0). Leave empty to auto-generate.'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Build (self-contained)
+        shell: pwsh
+        run: |
+          & .\scripts\build-dist.ps1 -SelfContained
+          Rename-Item -Path dist -NewName fbox-self-contained
+
+      - name: Build (framework-dependent)
+        shell: pwsh
+        run: |
+          & .\scripts\build-dist.ps1 -SelfContained:$false
+          Rename-Item -Path dist -NewName fbox-framework-dependent
+
+      - name: Determine tag
+        id: tag
+        shell: pwsh
+        run: |
+          $tag = "${{ github.event.inputs.version }}".Trim()
+          if (-not $tag) { $tag = "v$(Get-Date -Format 'yyyy.MM.dd.HHmm')" }
+          echo "tag=$tag" >> $env:GITHUB_OUTPUT
+
+      - name: Create Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "${{ steps.tag.outputs.tag }}"
+          gh release create $tag `
+            --title $tag `
+            --notes "## 下载说明`n`n- **self-contained**: 不需要安装 .NET 运行时，解压即用`n- **framework-dependent**: 需要安装 .NET 9.0 运行时，体积更小" `
+            "fbox-self-contained\fbox-dist.zip#fbox-$tag-self-contained.zip" `
+            "fbox-framework-dependent\fbox-dist.zip#fbox-$tag-framework-dependent.zip"
