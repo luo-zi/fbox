@@ -1,0 +1,30 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+*.sln.docstates
+*.userprefs
+
+## Build output
+dist/
+**/bin/**
+**/obj/**
+
+## IDE
+.vs/
+.vscode/
+.idea/
+*.swp
+
+## OS
+Thumbs.db
+.DS_Store
+
+## NuGet
+packages/
+*.nupkg
+
+## Project specific
+**/runtimes/
+**/native/
