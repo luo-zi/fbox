@@ -6,11 +6,12 @@ param(
 
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
 $DistDir = Join-Path $ProjectRoot "dist"
-$PublishArgs = @(
-    "-c", $Configuration,
-    "-r", $Runtime,
-    "--self-contained", $SelfContained.ToString().ToLower()
-)
+$PublishArgs = @("-c", $Configuration)
+if ($SelfContained) {
+    $PublishArgs += @("-r", $Runtime, "--self-contained", "true")
+} else {
+    $PublishArgs += "--self-contained", "false"
+}
 
 Write-Host "=== Building fbox distribution package ===" -ForegroundColor Cyan
 Write-Host "Runtime: $Runtime"
