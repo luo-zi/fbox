@@ -31,7 +31,7 @@ jobs:
 
       - name: Clean build cache
         shell: pwsh
-        run: dotnet clean -c Release -v q 2>$null
+        run: Get-ChildItem src -Recurse -Directory -Include bin,obj | Remove-Item -Recurse -Force
 
       - name: Build (framework-dependent)
         shell: pwsh
