@@ -47,9 +47,14 @@ jobs:
     needs: [build-sc, build-fd]
     runs-on: windows-latest
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           path: artifacts
+
+      - name: Diagnostic - file sizes
+        shell: pwsh
+        run: Get-ChildItem -Recurse artifacts | ForEach-Object { Write-Host "$($_.Length) $($_.Name)" }
 
       - name: Determine tag
         id: tag

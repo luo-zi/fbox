@@ -25,11 +25,8 @@ if (Test-Path $DistDir) {
 
 # Publish CLI
 Write-Host ">>> Publishing CLI (fbox.exe)..." -ForegroundColor Yellow
-$cliArgs = $PublishArgs + @(
-    "-p:PublishSingleFile=true"
-    "-p:IncludeNativeLibrariesForSelfExtract=true"
-    "/p:ForceRebuild=true"
-)
+$cliArgs = $PublishArgs + @("-p:PublishSingleFile=true")
+if ($SelfContained) { $cliArgs += "-p:IncludeNativeLibrariesForSelfExtract=true" }
 dotnet publish (Join-Path $ProjectRoot "src\Fbox.Cli\Fbox.Cli.csproj") `
     -o (Join-Path $DistDir "cli") @cliArgs
 
@@ -44,11 +41,8 @@ Write-Host "  -> fbox.exe ($((Get-Item (Join-Path $DistDir "fbox.exe")).Length /
 
 # Publish GUI
 Write-Host ">>> Publishing GUI (fbox-gui.exe)..." -ForegroundColor Yellow
-$guiArgs = $PublishArgs + @(
-    "-p:PublishSingleFile=true"
-    "-p:IncludeNativeLibrariesForSelfExtract=true"
-    "/p:ForceRebuild=true"
-)
+$guiArgs = $PublishArgs + @("-p:PublishSingleFile=true")
+if ($SelfContained) { $guiArgs += "-p:IncludeNativeLibrariesForSelfExtract=true" }
 dotnet publish (Join-Path $ProjectRoot "src\Fbox.Gui\Fbox.Gui.csproj") `
     -o (Join-Path $DistDir "gui") @guiArgs
 
